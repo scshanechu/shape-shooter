@@ -16,6 +16,36 @@ let spawnRate = 60; // frames between spawns
 let mouseX = 0;
 let mouseY = 0;
 let animationId = null; // Track the animation frame
+let autoFire = false;
+let shouldFire = false;
+let gameStartTime = 0; // Track when game started
+let gameTime = 0; // Current game time in seconds
+
+// Make canvas responsive
+function resizeCanvas() {
+    const maxWidth = window.innerWidth * 0.9;
+    const maxHeight = window.innerHeight - 120; // Leave space for controls and score
+
+    const aspectRatio = 800 / 600;
+    let newWidth = 1600;
+    let newHeight = 1200;
+
+    if (maxWidth < 1600 || maxHeight < 1200) {
+        if (maxWidth / aspectRatio <= maxHeight) {
+            newWidth = maxWidth;
+            newHeight = maxWidth / aspectRatio;
+        } else {
+            newHeight = maxHeight;
+            newWidth = maxHeight * aspectRatio;
+        }
+    }
+
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 function init() {
     player = new Player(canvas.width / 2, canvas.height - 50);
@@ -24,13 +54,15 @@ function init() {
     score = 0;
     gameOver = false;
     enemySpawnTimer = 0;
+    gameStartTime = Date.now();
+    gameTime = 0;
     gameOverElement.style.display = 'none';
     updateScore();
 }
 
 function updateScore() {
     const levelName = currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1);
-    scoreElement.textContent = `Score: ${score} | Level: ${levelName}`;
+    scoreElement.textContent = `Score: ${score} | Level: ${levelName} | Time: ${gameTime}s`;
 }
 
 function setLevel(level) {
@@ -56,21 +88,15 @@ function spawnEnemy() {
     const x = Math.random() * (canvas.width - 60) + 30;
     const enemyType = Math.random();
 
-    if (enemyType < 0.5) {
+    if (enemyType < 0.25) {
         enemies.push(new Enemy1(x, -30));
-    } else {
+    } else if (enemyType >= 0.25 && enemyType < 0.50) {
         enemies.push(new Enemy2(x, -30));
+    } else if (enemyType >= 0.50 && enemyType > 0.75) {
+        enemies.push(new Enemy3(x, -30));
+    } else {
+        enemies.push(new Enemy4(x, -30));
     }
-
-    // if (enemyType < 0.25) {
-    //     enemies.push(new Enemy1(x, -30));
-    // } else if (enemyType >= 0.25 && enemyType < 0.50) {
-    //     enemies.push(new Enemy2(x, -30));
-    // } else if (enemyType >= 0.50 && enemyType > 0.75) {
-    //     enemies.push(new Enemy3(x, -30));
-    // } else {
-    //     enemies.push(new Enemy4(x, -30));
-    // }
 }
 
 function checkCollision(obj1, obj2) {
@@ -87,6 +113,10 @@ function checkCollision(obj1, obj2) {
 function gameLoop() {
     if (gameOver) return;
 
+    // Update game time
+    gameTime = Math.floor((Date.now() - gameStartTime) / 1000);
+    updateScore();
+
     // Clear canvas
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -98,6 +128,15 @@ function gameLoop() {
     player.move(keys, canvas);
     player.draw(ctx);
 
+    if (autoFire && shouldFire) {
+        shouldFire = false;
+        setTimeout(
+        () => {
+            shouldFire = true;
+            const weaponTip = player.getWeaponTip();
+            bullets.push(new Bullet(weaponTip.x, weaponTip.y, player.angle));
+        }, 100);
+    }
     // Update and draw bullets
     for (let i = bullets.length - 1; i >= 0; i--) {
         bullets[i].update();
@@ -164,7 +203,12 @@ function restartGame() {
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
     keys[e.key] = true;
-
+    if (e.key === 'e') {
+        autoFire = !autoFire;
+        if (autoFire) {
+            shouldFire = true;
+        }
+    }
 });
 
 document.addEventListener('click', (e) => {
@@ -187,6 +231,6 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 // Start game
-canvas.focus();
 init();
+canvas.focus();
 gameLoop();

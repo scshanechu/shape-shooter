@@ -5,7 +5,7 @@ class Enemy3 {
         this.y = y;
         this.size = 30;
         this.speed = 2;
-        this.color = 'rgba(0, 255, 0)';
+        this.color = 'rgba(100, 200, 200)';
     }
 
     draw(ctx) {

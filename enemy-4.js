@@ -1,20 +1,29 @@
-// Enemy type 3
-class Enemy3 {
+// Enemy type 4
+class Enemy4 {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.size = 30;
         this.speed = 2;
-        this.color = 'rgba(0, 255, 0)';
+        this.color = 'rgba(110, 0, 0)';
+        this.direction = 'right';
+        this.extraPoints = 50;
     }
 
     draw(ctx) {
-        // Square shape - can be edited to any shape
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+        drawShape(ctx, this.x, this.y, this.size, 8, -Math.PI / 2);
     }
 
     update() {
+        if (this.direction === 'right') {
+            this.x += this.speed * 2;
+        } else {
+            this.x -= this.speed * 2 ;
+        }
+        if (this.x > canvas.width - this.size / 2 || this.x < 0 + this.size / 2) {
+            this.direction = this.direction === 'right' ? 'left' : 'right';
+        }
         this.y += this.speed;
     }
 
