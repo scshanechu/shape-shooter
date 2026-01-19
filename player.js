@@ -7,7 +7,7 @@ class Player {
         this.speed = 5;
         this.color = '#00ff00';
         this.weaponLength = 20;
-        this.weaponWidth = 6;
+        this.weaponWidth = 12;
         this.angle = -Math.PI / 2; // Start pointing up
     }
 
@@ -30,7 +30,7 @@ class Player {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, -this.weaponWidth / 2, this.weaponLength, this.weaponWidth);
+        ctx.fillRect(10, -this.weaponWidth / 2, this.weaponLength, this.weaponWidth);
         ctx.restore();
     }
 
