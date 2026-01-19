@@ -1,22 +1,17 @@
-// Enemy type 2
-class Enemy2 {
+// Enemy type 3
+class Enemy3 {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.size = 30;
-        this.speed = 3;
-        this.color = 'rgba(250, 250, 5)';
+        this.speed = 2;
+        this.color = 'rgba(0, 255, 0)';
     }
 
     draw(ctx) {
-        // Triangle shape - can be edited to any shape
+        // Square shape - can be edited to any shape
         ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y - this.size / 2);
-        ctx.lineTo(this.x - this.size / 2, this.y + this.size / 2);
-        ctx.lineTo(this.x + this.size / 2, this.y + this.size / 2);
-        ctx.closePath();
-        ctx.fill();
+        ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
     }
 
     update() {

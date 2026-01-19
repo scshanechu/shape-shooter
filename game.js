@@ -61,6 +61,16 @@ function spawnEnemy() {
     } else {
         enemies.push(new Enemy2(x, -30));
     }
+
+    // if (enemyType < 0.25) {
+    //     enemies.push(new Enemy1(x, -30));
+    // } else if (enemyType >= 0.25 && enemyType < 0.50) {
+    //     enemies.push(new Enemy2(x, -30));
+    // } else if (enemyType >= 0.50 && enemyType > 0.75) {
+    //     enemies.push(new Enemy3(x, -30));
+    // } else {
+    //     enemies.push(new Enemy4(x, -30));
+    // }
 }
 
 function checkCollision(obj1, obj2) {
@@ -102,8 +112,12 @@ function gameLoop() {
         for (let j = enemies.length - 1; j >= 0; j--) {
             if (checkCollision(bullets[i], enemies[j])) {
                 bullets.splice(i, 1);
+                if (enemies[j].extraPoints != null) {
+                    score += enemies[j].extraPoints;
+                }
                 enemies.splice(j, 1);
                 score += 10;
+
                 updateScore();
                 break;
             }
@@ -151,7 +165,10 @@ function restartGame() {
 document.addEventListener('keydown', (e) => {
     keys[e.key] = true;
 
-    if (e.key === ' ' && !gameOver) {
+});
+
+document.addEventListener('click', (e) => {
+    if (!gameOver) {
         e.preventDefault();
         const weaponTip = player.getWeaponTip();
         bullets.push(new Bullet(weaponTip.x, weaponTip.y, player.angle));
